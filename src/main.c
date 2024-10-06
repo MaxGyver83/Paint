@@ -86,9 +86,11 @@ static GC create_gc(int line_width) {
   return gc;
 }
 
-static void clearScreen(GC gc, Window win, int width, int height) {
+static void clearScreen(GC gc, Window win) {
   XSetForeground(dpy, gc, WhitePixel(dpy, scr));
-  XFillRectangle(dpy, win, gc, 0, 0, width, height);
+  XWindowAttributes xwa;
+  XGetWindowAttributes(dpy, win, &xwa);
+  XFillRectangle(dpy, win, gc, 0, 0, xwa.width, xwa.height);
   XSetForeground(dpy, gc, BlackPixel(dpy, scr));  // Reset the foreground color
   XFlush(dpy);
 }
@@ -146,7 +148,7 @@ static void run(GC gc, Window __window_main__) {
         break;
       case KeyPress:
         if (XkbKeycodeToKeysym(dpy, ev.xkey.keycode, 0, 0) == XK_c) {
-          clearScreen(gc, __window_main__, WIDTH, HEIGHT);
+          clearScreen(gc, __window_main__);
         } else if (XkbKeycodeToKeysym(dpy, ev.xkey.keycode, 0, 0) ==
                    XK_Escape) {
           return;
